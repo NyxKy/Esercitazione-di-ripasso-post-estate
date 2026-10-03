@@ -1,0 +1,163 @@
+<section class="catalog-section page-width" id="catalogo" aria-labelledby="catalog-title">
+  <div class="section-heading">
+    <h2 id="catalog-title">A ogni idea, la sua emoji.</h2>
+    <p class="section-description">Esplora. Scegli. Copia.<br>Un piccolo simbolo può dire tutto.</p>
+  </div>
+
+  <div class="catalog-layout">
+    <aside class="catalog-sidebar" aria-label="Guida al catalogo">
+      <div class="sidebar-note">
+        <i class="bi bi-lightbulb" aria-hidden="true"></i>
+        <h3>Un clic. Fatto.</h3>
+        <p>Clicca su un'emoji per copiarla. Usa il cuore per tenerla sempre a portata di mano.</p>
+        <span class="note-mark" aria-hidden="true">
+          <svg class="mark" viewBox="0 0 24 24" stroke-width="1.2" stroke-linecap="round">
+            <path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9" />
+          </svg>
+        </span>
+      </div>
+      <div class="routing-note">
+        <span class="routing-label"><i class="bi bi-braces" aria-hidden="true"></i> Dietro le quinte</span>
+        <p>Stesso universo, due modi di esplorarlo.</p>
+        <div class="routing-switch" #switchHost [class.is-dynamic]="dynamic()" [class.dragging]="switchDragging()" [class.pressed]="switchPressed()"
+          [style.--switch-drag.px]="switchDrag()"
+          (pointerdown)="startSwitchDrag($event)" (mousedown)="startSwitchDrag($event)" (touchstart)="startSwitchDrag($event)"
+          aria-label="Modalità di routing">
+          <span class="switch-indicator" aria-hidden="true"></span>
+          <a draggable="false" [routerLink]="categoryId() === 'fruits' ? '/fruits' : '/animals'"
+            [class.selected]="!dynamic()">Classico</a>
+          <a draggable="false" [routerLink]="['/generic', categoryId()]" [class.selected]="dynamic()">Dinamico</a>
+        </div>
+        <span class="route-path">{{ dynamic() ? '/generic/' + categoryId() : '/' + categoryId() }}</span>
+      </div>
+    </aside>
+
+    <div class="catalog-content">
+      <div class="catalog-toolbar">
+        <div class="category-heading">
+          <h3>{{ collection.favoritesOnly() ? 'La mia raccolta' : category().name }}</h3>
+          <span class="badge count-badge" [class]="'cat-' + categoryId()" [class.pulse]="countPulsing()">{{ filtered().length }} emoji</span>
+        </div>
+        <div class="search-box">
+          <i class="bi bi-search" aria-hidden="true"></i>
+          <input #searchInput type="search" placeholder="Cerca un'emoji..."
+            aria-label="Cerca un'emoji per nome" [value]="query()" (input)="query.set(searchInput.value)">
+        </div>
+      </div>
+      <div class="filter-toolbar">
+        <div class="filter-chips" #chipsHost aria-label="Filtra per gruppo" [class.pressed]="chipsPressed()"
+          [class.dragging]="chipsDragging()"
+          (pointerdown)="startChipsDrag($event)" (mousedown)="startChipsDrag($event)" (touchstart)="startChipsDrag($event)">
+          <span class="chip-indicator" aria-hidden="true" [class.settled]="indicatorReady()"
+            [style.transform]="'scale(' + ((chipsPressed() || chipsDragging()) ? 1.08 : 1) + ')'"
+            [style.left.px]="indicatorLeft() + chipsDrag()" [style.width.px]="indicatorWidth()"></span>
+          @for (item of groups(); track item) {
+            <button type="button" [class.selected]="group() === item" [attr.aria-pressed]="group() === item"
+              (click)="group.set(item)">{{ item }}</button>
+          }
+        </div>
+        <label class="sort-select">
+          <i class="bi bi-sort-down" aria-hidden="true"></i>
+          <select #order aria-label="Ordina le emoji" [value]="sort()" (change)="sort.set(order.value)">
+            <option value="default">In evidenza</option>
+            <option value="name">Nome A–Z</option>
+          </select>
+        </label>
+      </div>
+      <div class="row g-3 emoji-grid" [class.switching]="gridEntering()">
+        @for (item of filtered(); track item.id) {
+          <div class="col-6 col-md-4 col-xl-3">
+            <article class="card emoji-card">
+              <div class="card-topline">
+                <button type="button" class="favorite-button" [class.is-favorite]="collection.favorites().includes(item.id)"
+                  [class.just-toggled]="collection.pulsing() === item.id"
+                  [attr.aria-label]="(collection.favorites().includes(item.id) ? 'Rimuovi ' : 'Salva ') + item.name"
+                  [attr.aria-pressed]="collection.favorites().includes(item.id)" (click)="collection.toggleFavorite(item)">
+                  <i [class]="collection.favorites().includes(item.id) ? 'bi bi-heart-fill' : 'bi bi-heart'" aria-hidden="true"></i>
+                </button>
+              </div>
+              <button type="button" class="emoji-copy" (click)="collection.copy(item)" [attr.aria-label]="'Copia ' + item.name">
+                <span class="emoji-art" aria-hidden="true">{{ item.emoji }}</span>
+                <span class="emoji-name">{{ item.name }}</span>
+                <span class="emoji-group">{{ item.group }}</span>
+                <span class="copy-overlay"><i class="bi bi-copy" aria-hidden="true"></i> Copia emoji</span>
+              </button>
+            </article>
+          </div>
+        } @empty {
+          <div class="col-12">
+            <div class="empty-state">
+              <i [class]="collection.favoritesOnly() && !source().length ? 'bi bi-heart' : 'bi bi-search'" aria-hidden="true"></i>
+              <h4>{{ collection.favoritesOnly() && !source().length ? 'La tua raccolta comincia qui.' : 'Nessuna emoji trovata.' }}</h4>
+              <p>{{ collection.favoritesOnly() && !source().length ? 'Torna al catalogo e salva le tue preferite con il cuore.' : 'Prova un altro nome oppure rimuovi i filtri.' }}</p>
+              <button type="button" class="btn btn-dark" (click)="resetFilters(); collection.favoritesOnly.set(false)">
+                {{ collection.favoritesOnly() ? 'Esplora il catalogo' : 'Rimuovi i filtri' }}
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+      <div class="catalog-bottom">
+        <span aria-live="polite">{{ filtered().length }} di {{ source().length }} emoji {{ collection.favoritesOnly() ? 'nella tua raccolta' : 'in questa categoria' }}</span>
+        <span><i class="bi bi-copy" aria-hidden="true"></i> Pronte per le tue idee</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<nav class="category-nav" #dockHost [class.is-classic]="!dynamic()" [class.dragging]="dockDragging()"
+  (pointerdown)="startDockDrag($event)" (mousedown)="startDockDrag($event)" (touchstart)="startDockDrag($event)"
+  (pointermove)="onDockMove($event)" (mousemove)="onDockMove($event)" (touchmove)="onDockMove($event)"
+  (pointerup)="onDockUp($event)" (mouseup)="onDockUp($event)" (touchend)="onDockUp($event)"
+  aria-label="Categorie del catalogo">
+  <span class="dock-indicator" aria-hidden="true" [class.settled]="indicatorReady()"
+    [class]="'cat-' + (dockActiveId() ?? 'none')"
+    [style.width.px]="dockWidth()" [style.transform]="'translateX(' + (dockLeft() + dockDrag()) + 'px) scale(' + ((dockDragging() || dockPressed()) ? 1.08 : 1) + ')'"></span>
+  @for (item of categories; track item.id) {
+    <a draggable="false" [routerLink]="categoryRoute(item.id)" [style.--tint]="tintFor(item).fill" [style.--tint-line]="tintFor(item).line" [style.--tint-ink]="tintFor(item).ink" [routerLinkActive]="collection.favoritesOnly() ? '' : 'active-menu'"
+      [class]="'cat-' + item.id"
+      [class.active-menu]="categoryId() === item.id && !collection.favoritesOnly()"
+      [class.dock-hidden]="!dynamic() && (item.id === 'food' || item.id === 'vehicles')"
+      [class.pop-in]="dynamic() && (item.id === 'food' || item.id === 'vehicles')"
+      [ariaCurrentWhenActive]="collection.favoritesOnly() ? undefined : 'page'"
+      (click)="browseCategory($event)">
+      @switch (item.id) {
+        @case ('animals') {
+          <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 14c1.9 0 3.4 1.1 3.4 2.5 0 1.2-1.4 2.1-3.4 2.1s-3.4-.9-3.4-2.1C8.6 15.1 10.1 14 12 14Z" />
+            <circle cx="7.8" cy="11" r="1.5" />
+            <circle cx="12" cy="8.8" r="1.5" />
+            <circle cx="16.2" cy="11" r="1.5" />
+          </svg>
+        }
+        @case ('fruits') {
+          <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 8.4c-1-.8-2.2-1.2-3.3-1-2.1.3-3.7 2.3-3.7 4.8 0 3.4 2.6 6.3 4.6 6.3.6 0 1-.2 1.4-.4.6-.3 1.4-.3 2 0 .4.2.8.4 1.4.4 2 0 4.6-2.9 4.6-6.3 0-2.5-1.6-4.5-3.7-4.8-1.1-.2-2.3.2-3.3 1Z" />
+            <path d="M12 8.4V6.6c0-1.3 1-2.3 2.3-2.3" />
+          </svg>
+        }
+        @case ('food') {
+          <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 4.5 4.6 19.4c4.8 1.4 10 1.4 14.8 0L12 4.5Z" />
+            <circle cx="11.2" cy="11.8" r="1.1" />
+            <circle cx="14" cy="15.6" r="1.1" />
+            <circle cx="9.6" cy="16.4" r="0.9" />
+          </svg>
+        }
+        @default {
+          <svg class="category-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3.4c2.8 1.9 4.2 4.6 4.2 7.8 0 2-.5 3.9-1.4 5.6H9.2a12 12 0 0 1-1.4-5.6c0-3.2 1.4-5.9 4.2-7.8Z" />
+            <circle cx="12" cy="10" r="1.6" />
+            <path d="M9.2 16.8 7 20.6h10l-2.2-3.8" />
+          </svg>
+        }
+      }
+      <span>{{ item.name }}</span>
+      <span class="category-count">{{ item.items.length }}</span>
+    </a>
+  }
+</nav>

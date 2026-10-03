@@ -1,0 +1,95 @@
+/* Eight masked layers soften the viewport edge without intercepting input. */
+.gradient-blur {
+  position: fixed;
+  z-index: 5;
+  inset: auto 0 0;
+  height: 25%;
+  pointer-events: none;
+}
+
+.gradient-blur > div,
+.gradient-blur::before,
+.gradient-blur::after {
+  position: absolute;
+  inset: 0;
+  -webkit-backdrop-filter: blur(var(--blur));
+  backdrop-filter: blur(var(--blur));
+  -webkit-mask-image: linear-gradient(to bottom, transparent var(--start), black var(--solid-start), black var(--solid-end), transparent var(--end));
+  mask-image: linear-gradient(to bottom, transparent var(--start), black var(--solid-start), black var(--solid-end), transparent var(--end));
+}
+
+.gradient-blur::before {
+  content: '';
+  z-index: 1;
+  --blur: .5px;
+  --start: 0%;
+  --solid-start: 12.5%;
+  --solid-end: 25%;
+  --end: 37.5%;
+}
+.gradient-blur > div:nth-child(1) {
+  z-index: 2;
+  --blur: 1px;
+  --start: 12.5%;
+  --solid-start: 25%;
+  --solid-end: 37.5%;
+  --end: 50%;
+}
+.gradient-blur > div:nth-child(2) {
+  z-index: 3;
+  --blur: 2px;
+  --start: 25%;
+  --solid-start: 37.5%;
+  --solid-end: 50%;
+  --end: 62.5%;
+}
+.gradient-blur > div:nth-child(3) {
+  z-index: 4;
+  --blur: 4px;
+  --start: 37.5%;
+  --solid-start: 50%;
+  --solid-end: 62.5%;
+  --end: 75%;
+}
+.gradient-blur > div:nth-child(4) {
+  z-index: 5;
+  --blur: 8px;
+  --start: 50%;
+  --solid-start: 62.5%;
+  --solid-end: 75%;
+  --end: 87.5%;
+}
+.gradient-blur > div:nth-child(5) {
+  z-index: 6;
+  --blur: 16px;
+  --start: 62.5%;
+  --solid-start: 75%;
+  --solid-end: 87.5%;
+  --end: 100%;
+}
+.gradient-blur > div:nth-child(6) {
+  z-index: 7;
+  --blur: 32px;
+  --start: 75%;
+  --solid-start: 87.5%;
+  --solid-end: 100%;
+  --end: 112.5%;
+}
+.gradient-blur::after {
+  content: '';
+  z-index: 8;
+  --blur: 64px;
+  --start: 87.5%;
+  --solid-start: 100%;
+  --solid-end: 112.5%;
+  --end: 125%;
+}
+
+body:has(:focus-visible) .gradient-blur { visibility: hidden; }
+
+@media (prefers-reduced-transparency: reduce), (forced-colors: active) {
+  .gradient-blur { display: none; }
+}
+@media print {
+  .gradient-blur { display: none; }
+}

@@ -1,0 +1,205 @@
+/* Liquid Glass (traduzione web dei principi Apple, vedi skills/liquid-glass/SKILL.md).
+   Applicato SOLO a navbar (.site-header) e dock categorie (.category-nav). */
+
+/* ============================ 1. VETRO (navbar + dock) ==================== */
+/* Luce speculare sul bordo superiore: il "lensing" del vetro liquido. */
+.site-header::before,
+.category-nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgb(255 255 255 / 55%) 0%, rgb(255 255 255 / 16%) 30%, transparent 48%),
+    linear-gradient(to bottom, rgb(255 255 255 / 45%), transparent 40%);
+}
+
+/* Dock: le voci restano posizionate (cosi stanno sopra la pillola), senza
+   sottolineatura ne sfondo in hover: l'unico riscontro e la pillola. */
+.category-nav a {
+  position: relative;
+}
+
+/* Modalita classico: la dock mostra solo Animali e Frutta (2 colonne). */
+/* Classico: stesse regole automatiche, nessuna larghezza fissa. */
+
+.category-nav a.dock-hidden {
+  display: none;
+}
+
+/* Modalità dinamico: Cibo e Veicoli spuntano dalla dock a cascata, con molla. */
+@keyframes dock-pop {
+  0% {
+    opacity: 0;
+    transform: translateX(40px) translateY(8px) scale(0.86);
+    animation-timing-function: var(--ease-out);
+  }
+  45% {
+    opacity: 1;
+    transform: translateX(-10px) translateY(-4px) scale(1.06);
+    animation-timing-function: var(--ease-out);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(4px) translateY(2px) scale(0.98);
+    animation-timing-function: var(--ease-out);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
+  }
+}
+
+.category-nav a.pop-in {
+  animation: dock-pop 420ms both;
+}
+
+.category-nav a.pop-in:nth-child(3) {
+  animation-delay: 40ms;
+}
+
+.category-nav a.pop-in:nth-child(4) {
+  animation-delay: 80ms;
+}
+
+/* ==================== 2. SWITCH CLASSICO/DINAMICO ======================== */
+/* Switch Classico/Dinamico: pillola che scorre con effetto molla. */
+.switch-indicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  border-radius: 10px;
+  background: var(--surface-accent);
+  box-shadow: 0 1px 4px rgb(28 29 40 / 12%), inset 0 1px 0 rgb(255 255 255 / 90%);
+  --shift: 0%;
+  transform: translateX(calc(var(--shift) + var(--switch-drag, 0px)));
+  transition: transform 250ms var(--ease-spring);
+  animation: switch-bounce 420ms var(--ease-spring) backwards;
+  pointer-events: none;
+}
+
+/* Durante il trascinamento la pillola segue il puntatore senza ritardo e si
+   solleva di poco: il gesto si vede "preso". */
+.routing-switch { cursor: grab; }
+/* :not(.dragging) alza la specificita sopra le regole :not(.is-dynamic) che
+   riscrivono il transform della pillola per l'animazione d'ingresso. */
+.routing-switch.pressed:not(.dragging) .switch-indicator {
+  transition: transform 160ms var(--ease-out);
+  transform: translateX(calc(var(--shift) + var(--switch-drag, 0px))) scale(1.08);
+}
+.routing-switch.dragging { cursor: grabbing; }
+.routing-switch a:active { transform: scale(0.97); }
+.routing-switch.dragging .switch-indicator {
+  transition: none;
+  transform: translateX(calc(var(--shift) + var(--switch-drag, 0px))) scale(1.08);
+}
+.routing-switch.dragging a { transform: none; }
+
+.routing-switch.is-dynamic .switch-indicator {
+  --shift: 100%;
+}
+
+/* Stessa animazione nei due versi: la pillola arriva sempre dall'altro segmento. */
+.routing-switch:not(.is-dynamic) .switch-indicator {
+  animation-name: switch-bounce-left;
+}
+
+@keyframes switch-bounce-left {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(var(--shift) + 26px)) scale(0.9);
+    animation-timing-function: var(--ease-out);
+  }
+  55% {
+    opacity: 1;
+    transform: translateX(calc(var(--shift) - 6px)) scale(1.04);
+    animation-timing-function: var(--ease-out);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(var(--shift)) scale(1);
+  }
+}
+
+/* Entrata con rimbalzo: la pillola supera il bersaglio e si assesta. */
+@keyframes switch-bounce {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(var(--shift) - 26px)) scale(0.9);
+    animation-timing-function: var(--ease-out);
+  }
+  55% {
+    opacity: 1;
+    transform: translateX(calc(var(--shift) + 6px)) scale(1.04);
+    animation-timing-function: var(--ease-out);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(var(--shift)) scale(1);
+  }
+}
+
+/* ===================== 4. RIFLESSI INTERNI DELLE PILLOLE =================== */
+/* Riflesso interno delle pillole: velo chiaro che sfuma verso il basso piu un
+   filo di luce sul bordo superiore: ::after cosi non tocca lo sfondo a tinta di categoria. */
+.dock-indicator::after,
+.chip-indicator::after,
+.switch-indicator::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgb(255 255 255 / 55%), rgb(255 255 255 / 12%) 45%, rgb(255 255 255 / 0%) 72%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 85%);
+  pointer-events: none;
+}
+
+/* ========================= 3. CHIP DEI GRUPPI ============================= */
+/* Chip dei filtri: pillola che scorre sotto il chip selezionato. */
+.chip-indicator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  border-radius: 999px;
+  background: var(--surface-accent);
+  border: 1px solid var(--border-accent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 90%);
+  transition: none;
+  pointer-events: none;
+}
+
+/* ------------------- gesti: la pillola segue il puntatore ------------------ */
+/* La riga dei chip si trascina come la dock: la pillola segue il gesto. */
+.filter-chips {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-drag: none;
+  /* Il dito puo trascinare in orizzontale; lo scroll verticale resta al browser. */
+  touch-action: pan-y;
+}
+
+.filter-chips.pressed:not(.dragging) .chip-indicator {
+  transition: transform 160ms var(--ease-out);
+  transform: scale(1.08);
+}
+.filter-chips.dragging { cursor: grabbing; }
+.filter-chips.dragging .chip-indicator {
+  transition: none;
+  transform: scale(1.08);
+}
+
+/* La pillola scatta senza animazione al primo render; scorre con molla
+   SOLO quando l'utente clicca un chip. */
+.chip-indicator.settled {
+  transition: left 250ms var(--ease-spring), width 250ms var(--ease-spring), transform 160ms var(--ease-out);
+}
+
+@media (max-width: 767px) {
+  .category-nav.is-classic {
+    width: min(230px, calc(100% - 24px));
+  }
+}

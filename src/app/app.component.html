@@ -1,0 +1,120 @@
+<a class="skip-link" href="#catalogo">Vai al catalogo</a>
+<div class="gradient-blur gradient-blur-top" aria-hidden="true">
+  <div></div><div></div><div></div><div></div><div></div><div></div>
+</div>
+<header class="site-header">
+  <nav class="navbar page-width" aria-label="Navigazione principale">
+    <a class="brand" routerLink="/animals" (click)="goHome()">
+      <span class="brand-mark" aria-hidden="true"><i class="bi bi-emoji-smile"></i></span>
+      <span>emoji<span class="brand-light">corp</span><sup>®</sup></span>
+    </a>
+    <button class="mobile-toggle" type="button" aria-label="Apri o chiudi il menu"
+      aria-controls="main-menu" [attr.aria-expanded]="mobileOpen()" (click)="mobileOpen.set(!mobileOpen())">
+      <i [class]="mobileOpen() ? 'bi bi-x-lg' : 'bi bi-list'" aria-hidden="true"></i>
+    </button>
+    <div class="main-menu" id="main-menu" [class.is-open]="mobileOpen()">
+      <div class="main-links">
+        <a routerLink="/animals" routerLinkActive="active-menu"
+          [class.current]="!collection.favoritesOnly()" (click)="goCatalog()">
+          Esplora <span class="nav-dot" aria-hidden="true"></span>
+        </a>
+        <a href="#universo" (click)="goUniverse($event)">Il nostro universo</a>
+      </div>
+      <button type="button" class="collection-button" [class.selected]="collection.favoritesOnly()" (click)="openCollection()">
+        <i class="bi bi-heart" aria-hidden="true"></i> La mia raccolta <span>{{ collection.favorites().length }}</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <section class="hero page-width" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <h1 id="hero-title">Un universo.<br>Mille modi<br>di <span class="expression-word">esprimerti<svg viewBox="0 0 400 20" preserveAspectRatio="none" aria-hidden="true"><path d="M3 13 Q155 0 396 9 M20 18 Q220 7 380 15" /></svg></span><span class="title-period">.</span></h1>
+      <p>Cataloghiamo il mondo, un'emoji alla volta.<br> Trova quella giusta per dare forma alle tue idee.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn explore-button" (click)="collection.favoritesOnly.set(false); scrollToCatalog()">
+          Esplora il catalogo <i class="bi bi-arrow-down" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="surprise-button" (click)="surprise($event)">
+          <i class="bi bi-shuffle" aria-hidden="true"></i> Sorprendimi
+        </button>
+      </div>
+      <div class="hero-micro">Fatto per tutte le tue sfumature.</div>
+    </div>
+    <div class="hero-art" aria-label="Un piccolo universo di emoji: pianeta, razzo, frutta e animali" role="img">
+      <div class="orbital orbital-outer"></div>
+      <div class="orbital orbital-inner"></div>
+      <span class="orbit-dot orbit-dot-one"></span>
+      <span class="orbit-dot orbit-dot-two"></span>
+      <svg class="mark art-mark" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9" />
+      </svg>
+      <div class="floating-tile tile-lemon"><span>🍋</span></div>
+      <div class="floating-tile tile-rocket"><span>🚀</span></div>
+      <div class="floating-tile tile-globe"><span>🌍</span></div>
+      <div class="floating-tile tile-fox"><span>🦊</span></div>
+      <div class="floating-tile tile-hand"><span>✌️</span></div>
+      <span class="art-caption caption-top">Un linguaggio senza confini.</span>
+      <span class="art-caption caption-bottom"><span class="status-dot"></span> Universo in espansione</span>
+      <span class="art-coordinate">EC / 001</span>
+    </div>
+  </section>
+
+  <section class="stats-line" aria-label="Il catalogo in numeri">
+    <p class="page-width"><strong>{{ total }} emoji</strong> in quattro famiglie: animali, frutta, cibo, veicoli. Oognuna con il suo carattere.</p>
+  </section>
+
+  <router-outlet />
+
+  <section class="universe-section page-width" id="universo" aria-labelledby="universe-title">
+    <div class="universe-panel">
+      <svg class="mark universe-mark" viewBox="0 0 24 24" stroke-width="1.3" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 3v18M4.2 7.5l15.6 9M19.8 7.5l-15.6 9" />
+      </svg>
+      <div class="universe-copy">
+        <h2 id="universe-title">Il mondo è complesso.<br> Esprimersi, un po' meno.</h2>
+        <p>Una pizza per organizzare una serata. Un razzo per un nuovo inizio.<br> Crediamo nei piccoli simboli che avvicinano le persone.</p>
+      </div>
+      <div class="universe-signoff">
+        <svg class="mark" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" />
+          <path d="M3.5 12h17M12 3.5c2.4 2.4 2.4 14.6 0 17M12 3.5c-2.4 2.4-2.4 14.6 0 17" />
+        </svg>
+        <span>Ogni idea merita<br>la sua emoji.</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer page-width">
+  <a class="brand footer-brand" routerLink="/animals" (click)="goHome()">
+    <span class="brand-mark" aria-hidden="true"><i class="bi bi-emoji-smile"></i></span>
+    <span>emoji<span class="brand-light">corp</span><sup>®</sup></span>
+  </a>
+  <span>Un piccolo simbolo. Una grande connessione.</span>
+  <span class="footer-credit">Progetto Angular <span>© 2026 EmojiCorp</span></span>
+</footer>
+
+<div class="notice-toast" role="status" aria-live="polite" [class.visible]="collection.notice()">
+  <i class="bi bi-info-circle" aria-hidden="true"></i> {{ collection.notice() }}
+</div>
+
+<dialog #randomDialog class="random-dialog" aria-labelledby="random-title" [style.--dialog-dx.px]="dialogOrigin().x" [style.--dialog-dy.px]="dialogOrigin().y" (click)="$event.target === randomDialog && closeRandom()">
+  <button type="button" class="dialog-close" aria-label="Chiudi" (click)="closeRandom()"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+  @if (randomEmoji(); as item) {
+    <span class="random-art" aria-hidden="true" [class.out]="artPhase() === 'out'" [class.in]="artPhase() === 'in'">{{ item.emoji }}</span>
+    <h2 id="random-title">{{ item.name }}</h2>
+    <p>{{ item.group }} · Pronta per la tua prossima idea.</p>
+    <div class="dialog-actions">
+      <button type="button" class="btn explore-button" (click)="collection.copy(item)"><i class="bi bi-copy" aria-hidden="true"></i> Copia emoji</button>
+      <button type="button" class="btn dialog-save" [class.just-toggled]="collection.pulsing() === item.id"
+        [attr.aria-pressed]="collection.favorites().includes(item.id)" (click)="collection.toggleFavorite(item)">
+        <i [class]="collection.favorites().includes(item.id) ? 'bi bi-heart-fill' : 'bi bi-heart'" aria-hidden="true"></i>
+        {{ collection.favorites().includes(item.id) ? 'Salvata' : 'Salva' }}
+      </button>
+    </div>
+    <button type="button" class="surprise-button" (click)="surprise($event)"><i class="bi bi-shuffle" aria-hidden="true"></i> Un'altra, per favore</button>
+    <p class="dialog-notice" role="status">{{ collection.notice() }}</p>
+  }
+</dialog>
